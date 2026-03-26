@@ -143,15 +143,15 @@ export default function TvShowDetails() {
             </div>
 
             {/* ✅ TV-specific stats */}
-            <div className="flex border border-[#1e1e1e] rounded-lg overflow-hidden w-fit">
+            <div className="flex border border-[#1e1e1e] rounded-lg overflow-hidden w-100 md:w-fit">
               {[
                 { l: "Seasons",  v: seasons  || "—" },
                 { l: "Episodes", v: episodes || "—" },
                 { l: "Network",  v: network          },
               ].map((s, i) => (
                 <div key={s.l} className={`px-5 py-3 bg-[#111] ${i > 0 ? "border-l border-[#1e1e1e]" : ""}`}>
-                  <div className="text-[10px] uppercase tracking-[2px] text-[#444] mb-1">{s.l}</div>
-                  <div className="text-[15px] font-medium text-[#ddd]">{s.v}</div>
+                  <div className="text-[8px] uppercase tracking-[2px] text-[#444] mb-1">{s.l}</div>
+                  <div className="text-[10px] font-medium text-[#ddd]">{s.v}</div>
                 </div>
               ))}
             </div>

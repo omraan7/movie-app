@@ -88,7 +88,7 @@ export default function NavBar() {
       <nav className="fixed top-0 w-full z-50 bg-[#0d0d0d]/97 border-b border-[#1a1a1a] h-15 flex items-center justify-between gap-6 px-10">
 
         {/* Logo */}
-        <NavLink to="/" className="font-black text-[1.4rem] tracking-[3px] text-white no-underline shrink-0"
+        <NavLink to="/" className=" hidden md:flex font-black text-[1.4rem] tracking-[3px] text-white no-underline shrink-0"
           style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
           OMRAN<span className="text-red-600">'S</span> MOVIES
         </NavLink>
@@ -134,7 +134,7 @@ export default function NavBar() {
 
           {/* Dropdown */}
           {showDrop && (
-            <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-[#111] border border-[#222] rounded-lg z-200 max-h-100 overflow-y-auto
+            <div className="z-9999 absolute top-[calc(100%+8px)] left-0 right-0 bg-[#111] border border-[#222] rounded-lg max-h-100 overflow-y-auto
               scrollbar-thin scrollbar-thumb-[#333]">
 
               {searching ? (

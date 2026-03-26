@@ -71,7 +71,7 @@ export default function ActorDetails() {
 
         <div className=" md:hidden  absolute bottom-0 left-0 right-0 h-full bg-linear-to-t from-[#000000] to-transparent" ></div>
       {/* ── Hero ── */}
-      <div className="relative h-125 overflow-hidden">
+      <div className="relative   overflow-hidden">
 
         {actor.profile_path && (
           <>
@@ -140,7 +140,7 @@ export default function ActorDetails() {
       </div>
 
       {/* ── Stats ── */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 px-10 mt-4">
+      <div className=" grid grid-cols-2 md:grid-cols-4 gap-2.5 px-10 mt-4">
         {[
           { l: "Popularity", v: Math.round(actor.popularity) },
           { l: "Department", v: actor.known_for_department || "—" },
@@ -148,8 +148,8 @@ export default function ActorDetails() {
           { l: "Born", v: actor.birthday?.slice(0, 4) ?? "—" },
         ].map((s) => (
           <div key={s.l} className="bg-[#111] border border-[#1e1e1e] rounded-lg p-4">
-            <div className="text-[10px] uppercase tracking-[2px] text-[#444] mb-1">{s.l}</div>
-            <div className="text-[19px] font-medium text-[#ddd]">{s.v}</div>
+            <div className="text-[7px] uppercase tracking-[2px] text-[#444] mb-1">{s.l}</div>
+            <div className="text-[10px] font-medium text-[#ddd]">{s.v}</div>
           </div>
         ))}
       </div>
