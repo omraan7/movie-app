@@ -10,6 +10,8 @@ import NotFound from './componants/Not found/NotFound'
 import MovieDetails from './componants/Home/MovieDetails/MovieDetails'
 import People from './componants/People/People'
 import ActorDetails from './componants/People/ActorDetails'
+import Tvshows from './componants/Tvshows/Tvshows'
+import TvShowDetails from './componants/Tvshows/TvShowDetails'
 
 const allRoutes = createBrowserRouter([
 
@@ -21,7 +23,10 @@ const allRoutes = createBrowserRouter([
       },
       { path: 'movie/:id', element: <MovieDetails /> },
       { path: 'people', element: <People /> },
-      { path: 'actor/:id', element: <ActorDetails /> },  
+      { path: 'Tvshows', element: <Tvshows /> },
+
+      { path: '/tv/:id', element: <TvShowDetails /> },
+      { path: 'actor/:id', element: <ActorDetails /> },
 
       { path: 'Contact', element: <Contact /> },
       { path: '*', element: <NotFound /> },

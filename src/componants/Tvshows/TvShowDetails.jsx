@@ -1,42 +1,38 @@
-// MovieDetails.jsx
-import { CarouselSpacing } from "@/componants/ActorDetailsMovie/ActorDetalisMoves";
+import { Swiper, SwiperSlide } from "swiper/react"
+import { FreeMode, Mousewheel } from "swiper/modules"
+import "swiper/css"
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 
 const API_KEY = "4783682a696f279ea3f036ea2a5a0021";
 
-export default function MovieDetails() {
+export default function TvShowDetails() {
   const { id } = useParams();
-  const [movie,       setMovie]       = useState(null);
+  const [show,        setShow]        = useState(null);
   const [trailer,     setTrailer]     = useState(null);
   const [showTrailer, setShowTrailer] = useState(false);
-  const [rating,      setRating]      = useState("");
-  const [releaseDate, setReleaseDate] = useState("");
+  const [cast,        setCast]        = useState([]);
 
   useEffect(() => {
-    async function getMovieDetails() {
-      const [{ data }, { data: relData }, { data: vidData }] = await Promise.all([
-        axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=${API_KEY}&language=en-US`),
-        axios.get(`https://api.themoviedb.org/3/movie/${id}/release_dates?api_key=${API_KEY}`),
-        axios.get(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${API_KEY}&language=en-US`),
+    async function fetchAll() {
+      const [{ data }, { data: vidData }, { data: credData }] = await Promise.all([
+        axios.get(`https://api.themoviedb.org/3/tv/${id}?api_key=${API_KEY}&language=en-US`),
+        axios.get(`https://api.themoviedb.org/3/tv/${id}/videos?api_key=${API_KEY}&language=en-US`),
+        axios.get(`https://api.themoviedb.org/3/tv/${id}/credits?api_key=${API_KEY}&language=en-US`),
       ]);
 
-      setMovie(data);
-
-      const us = relData.results.find(r => r.iso_3166_1 === "US");
-      if (us) {
-        const c = us.release_dates.find(d => d.certification);
-        if (c) { setRating(c.certification); setReleaseDate(c.release_date.split("T")[0]); }
-      }
+      setShow(data);
 
       const t = vidData.results.find(v => v.type === "Trailer" && v.site === "YouTube");
       setTrailer(t);
+
+      setCast((credData.cast || []).filter(a => a.profile_path).slice(0, 20));
     }
-    getMovieDetails();
+    fetchAll();
   }, [id]);
 
-  if (!movie) return (
+  if (!show) return (
     <div className="flex justify-center items-center h-screen bg-[#0d0d0d]">
       <div className="flex gap-2">
         {[0,1,2].map(i => (
@@ -47,12 +43,15 @@ export default function MovieDetails() {
     </div>
   );
 
-  const genres   = movie.genres.map(g => g.name);
-  const hours    = Math.floor(movie.runtime / 60);
-  const mins     = movie.runtime % 60;
-  const duration = `${hours}h ${mins}m`;
-  const score    = Math.round(movie.vote_average * 10) / 10;
+  const genres   = show.genres?.map(g => g.name) || [];
+  const score    = Math.round(show.vote_average * 10) / 10;
   const stars    = Math.round(score / 2);
+
+  // ✅ TV-specific fields
+  const seasons  = show.number_of_seasons;
+  const episodes = show.number_of_episodes;
+  const status   = show.status;
+  const network  = show.networks?.[0]?.name || "—";
 
   return (
     <div className="bg-[#0d0d0d] min-h-screen text-white">
@@ -62,12 +61,13 @@ export default function MovieDetails() {
 
         {/* Background */}
         <div className="absolute inset-0 bg-cover bg-center scale-[1.04] blur-sm"
-          style={{ backgroundImage: `url(https://image.tmdb.org/t/p/original${movie.backdrop_path || movie.poster_path})` }} />
+          style={{ backgroundImage: `url(https://image.tmdb.org/t/p/original${show.backdrop_path || show.poster_path})` }} />
         <div className="absolute inset-0 bg-black/72" />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0d0d0d]/95 via-[#0d0d0d]/60 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#0d0d0d] to-transparent" />
 
-        <Link to="/" className="absolute top-6 left-6 z-999 text-sm text-[#aaa] px-3.5 py-1.5 rounded-full border border-[#333] bg-black/60 hover:text-white hover:border-[#555] transition-all">
+        <Link to="/Tvshows"
+          className="absolute top-6 left-6 z-10 text-sm text-[#aaa] px-3.5 py-1.5 rounded-full border border-[#333] bg-black/60 hover:text-white hover:border-[#555] transition-all">
           ← Back
         </Link>
 
@@ -76,27 +76,41 @@ export default function MovieDetails() {
 
           {/* Poster */}
           <div className="w-[200px] flex-shrink-0 rounded-xl overflow-hidden border border-[#222]">
-            <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt={movie.title} className="w-full block" />
+            <img src={`https://image.tmdb.org/t/p/w500${show.poster_path}`} alt={show.name} className="w-full block" />
           </div>
 
           {/* Info */}
           <div className="flex-1 pt-2">
             <h1 className="text-[clamp(2.5rem,5vw,4.5rem)] leading-none tracking-[2px] text-white mb-1"
               style={{ fontFamily: "'Bebas Neue', sans-serif" }}>
-              {movie.title}
+              {show.name}
             </h1>
-            {movie.tagline && (
-              <p className="text-[13px] text-[#555] italic mb-4 tracking-[.5px]">{movie.tagline}</p>
+
+            {show.tagline && (
+              <p className="text-[13px] text-[#555] italic mb-4 tracking-[.5px]">{show.tagline}</p>
             )}
 
             {/* Pills */}
             <div className="flex flex-wrap gap-2 mb-4">
-              {rating && <span className="px-3 py-1 rounded-full border border-[#555] text-[#bbb] text-[11px]">{rating}</span>}
-              {releaseDate && <span className="px-3 py-1 rounded-full border border-[#333] text-[#777] text-[11px]">{releaseDate}</span>}
+              {show.first_air_date && (
+                <span className="px-3 py-1 rounded-full border border-[#333] text-[#777] text-[11px]">
+                  {show.first_air_date.slice(0, 4)}
+                </span>
+              )}
               {genres.map(g => (
-                <span key={g} className="px-3 py-1 rounded-full border border-red-600 text-red-500 bg-red-600/8 text-[11px]">{g}</span>
+                <span key={g} className="px-3 py-1 rounded-full border border-red-600 text-red-500 bg-red-600/8 text-[11px]">
+                  {g}
+                </span>
               ))}
-              <span className="px-3 py-1 rounded-full border border-[#333] text-[#777] text-[11px]">{duration}</span>
+              {status && (
+                <span className={`px-3 py-1 rounded-full text-[11px] border ${
+                  status === "Returning Series"
+                    ? "border-green-700 text-green-500 bg-green-600/8"
+                    : "border-[#333] text-[#777]"
+                }`}>
+                  {status}
+                </span>
+              )}
             </div>
 
             {/* Stars */}
@@ -108,11 +122,11 @@ export default function MovieDetails() {
                 ))}
               </div>
               <span className="text-[12px] text-[#666]">
-                {score} / 10 · {movie.vote_count.toLocaleString()} votes
+                {score} / 10 · {show.vote_count?.toLocaleString()} votes
               </span>
             </div>
 
-            <p className="text-[14px] text-[#999] leading-[1.8] mb-7 max-w-xl">{movie.overview}</p>
+            <p className="text-[14px] text-[#999] leading-[1.8] mb-7 max-w-xl">{show.overview}</p>
 
             {/* Buttons */}
             <div className="flex gap-3 mb-7">
@@ -128,12 +142,12 @@ export default function MovieDetails() {
               </button>
             </div>
 
-            {/* Stats */}
+            {/* ✅ TV-specific stats */}
             <div className="flex border border-[#1e1e1e] rounded-lg overflow-hidden w-fit">
               {[
-                { l: "Budget",  v: movie.budget  ? `$${Math.round(movie.budget  / 1e6)}M` : "—" },
-                { l: "Revenue", v: movie.revenue ? `$${Math.round(movie.revenue / 1e6)}M` : "—" },
-                { l: "Status",  v: movie.status  || "—" },
+                { l: "Seasons",  v: seasons  || "—" },
+                { l: "Episodes", v: episodes || "—" },
+                { l: "Network",  v: network          },
               ].map((s, i) => (
                 <div key={s.l} className={`px-5 py-3 bg-[#111] ${i > 0 ? "border-l border-[#1e1e1e]" : ""}`}>
                   <div className="text-[10px] uppercase tracking-[2px] text-[#444] mb-1">{s.l}</div>
@@ -145,18 +159,52 @@ export default function MovieDetails() {
         </div>
       </div>
 
-      {/* ── Cast Carousel ── */}
-      <div className="px-10 pb-20 -mt-4">
-        <CarouselSpacing id={id} />
-      </div>
+      {/* ── Cast ── */}
+      
+       
+      {/* ── Cast ── */}
+      {cast.length > 0 && (
+        <div className="px-10 pb-20 -mt-4">
+          <div className="text-[10px] uppercase tracking-[4px] text-[#444] mb-4">Cast</div>
+          <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-thin scrollbar-thumb-[#333]">
+           <Swiper
+            modules={[FreeMode, Mousewheel]}
+            spaceBetween={10}
+            slidesPerView="auto"
+            freeMode={true}
+            grabCursor={true}
+            mousewheel={{ forceToAxis: true, sensitivity: 1 }}
+          >
+            {cast.map(actor => (
+              <SwiperSlide key={actor.id} style={{ width: "150px" }}>
+                <Link to={`/actor/${actor.id}`} className="flex flex-col items-center text-white">
+             
+                  <img
+                    src={
+                      actor.profile_path
+                        ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
+                        : "/placeholder.png"
+                    }
+                    alt={actor.name}
+                    className="w-full rounded-lg object-cover"
+                  />
+                  <p className="text-sm font-semibold mt-2 text-center">{actor.name}</p>
+                  <p className="text-xs text-gray-400 text-center">{actor.character}</p>
+                </Link>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+          </div>
+        </div>
+      )}
 
       {/* ── Trailer Modal ── */}
       {showTrailer && trailer && (
         <div className="fixed inset-0 bg-black/93 z-50 flex items-center justify-center p-8"
-          onClick={(e) => e.target === e.currentTarget && setShowTrailer(false)}>
+          onClick={e => e.target === e.currentTarget && setShowTrailer(false)}>
           <div className="relative w-[65%] max-w-3xl aspect-video">
             <button onClick={() => setShowTrailer(false)}
-              className="absolute -top-8 right-0 text-[#aaa] hover:text-white text-2xl cursor-pointer bg-none border-none">
+              className="absolute -top-8 right-0 text-[#aaa] hover:text-white text-2xl cursor-pointer bg-transparent border-none">
               ×
             </button>
             <iframe

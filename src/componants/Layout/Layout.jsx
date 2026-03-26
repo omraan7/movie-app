@@ -6,7 +6,7 @@ export default function Layout() {
   return (
    <>
    <NavBar />
-   <div className="pt-17 bg-blue-900"><Outlet /></div>
+   <div className=" bg-black mt-14"><Outlet /></div>
    </>
   )
 }

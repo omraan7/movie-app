@@ -2,6 +2,7 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "ESNext",
+    "moduleResolution": "bundler",   // ✅ تغيير هنا
     "jsx": "react-jsx",
     "allowJs": true,
     "checkJs": false,
@@ -10,7 +11,7 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": [],
+    // ✅ اشيل "types": [] خالص
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
