@@ -47,7 +47,6 @@ export default function TvShowDetails() {
   const score    = Math.round(show.vote_average * 10) / 10;
   const stars    = Math.round(score / 2);
 
-  // ✅ TV-specific fields
   const seasons  = show.number_of_seasons;
   const episodes = show.number_of_episodes;
   const status   = show.status;
