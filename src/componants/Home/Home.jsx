@@ -33,7 +33,7 @@ export default function Home() {
     </div>
   );
 
-  const featured = movies[1];
+  const featured = movies[18];
 
   return (
     <div className="bg-[#0d0d0d] min-h-screen text-white">
